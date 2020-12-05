@@ -1,0 +1,1 @@
+[![Unit tests](https://github.com/vadim-hleif/ktor-simple-rest-service/workflows/Unit%20tests/badge.svg?branch=master&event=push)](https://github.com/vadim-hleif/ktor-simple-rest-service/actions?query=workflow%3A%22Unit+tests%22)
