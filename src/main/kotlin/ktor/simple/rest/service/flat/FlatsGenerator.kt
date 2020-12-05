@@ -7,8 +7,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 /**
- * [upcomingDaysCount] is used for [generateFlat]. It affects count of days for which [Flat.schedules] will be generated.
- * e.g. if it's 7(default value) - schedules will be generated for current day + 6 upcoming days
+ * [upcomingDaysCount] is used in [generateFlat] method. It affects count of days for each [Flat.schedules].
+ * e.g. if it's 7(default value) - schedules will be generated for current day + 6 next days
  *
  * [viewingSlotTimeWindow] affects difference between [ViewingSlot.startTime] and [ViewingSlot.endTime] for each slot in [Flat.schedules]
  * Should be provided in minutes
