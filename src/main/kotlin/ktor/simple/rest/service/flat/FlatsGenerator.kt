@@ -5,7 +5,6 @@ import ktor.simple.rest.service.flat.dtos.Flat
 import ktor.simple.rest.service.flat.dtos.ViewingSlot
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
 /**
  * [upcomingDaysCount] is used for [generateFlat]. It affects count of days for which [Flat.schedules] will be generated.
@@ -26,28 +25,19 @@ class FlatsGenerator(
 ) {
 
     fun generateFlat(): Flat {
-        val schedules = LinkedList<DailySchedule>()
+        val currentDay = LocalDate.now()
 
-        // generate for one week
-        for (dayNum in 0L until upcomingDaysCount) {
-            val slots = LinkedList<ViewingSlot>()
-
-            var slotStartTime = startDayTime
-            var slotEndTime = startDayTime.plusMinutes(viewingSlotTimeWindow)
-
-            while (!slotEndTime.isAfter(endDayTime)) {
-                slots.add(ViewingSlot(slotStartTime, slotEndTime))
-
-                slotStartTime = slotEndTime
-                slotEndTime = slotStartTime.plusMinutes(20)
+        return (0L until upcomingDaysCount)
+            .map { dayNum ->
+                DailySchedule(
+                    dateOfTheDay = currentDay.plusDays(dayNum),
+                    viewingSlots = generateSequence(startDayTime) { it.plusMinutes(viewingSlotTimeWindow) }
+                        .takeWhile { it.isBefore(endDayTime) }
+                        .map { ViewingSlot(it, it.plusMinutes(viewingSlotTimeWindow)) }
+                        .toList()
+                )
             }
-
-            val currentDay = LocalDate.now().plusDays(dayNum)
-            schedules.add(DailySchedule(currentDay, slots))
-        }
-
-
-        return Flat(schedules)
+            .let(::Flat)
     }
 
 }
