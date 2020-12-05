@@ -16,6 +16,11 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 
+    // ktor
+    val ktorVersion = "1.4.3"
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+
     // Tests tools
     testImplementation("org.junit.jupiter:junit-jupiter")
 
