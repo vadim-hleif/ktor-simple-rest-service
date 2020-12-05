@@ -1,4 +1,4 @@
-package ktor.simple.rest.service.flat
+package ktor.simple.rest.service.flat.utils
 
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe

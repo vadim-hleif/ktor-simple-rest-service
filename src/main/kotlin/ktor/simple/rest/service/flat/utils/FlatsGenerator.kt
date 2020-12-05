@@ -1,4 +1,4 @@
-package ktor.simple.rest.service.flat
+package ktor.simple.rest.service.flat.utils
 
 import ktor.simple.rest.service.flat.dtos.DailySchedule
 import ktor.simple.rest.service.flat.dtos.Flat
