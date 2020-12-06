@@ -97,6 +97,19 @@ class BookingServiceTest {
     }
 
     @Test
+    fun `approve rejected slot -- error`() {
+        val tenant = TenantsRepository.findAll().first()
+        val flat = FlatsRepository.findAll().values.first()
+        val slot = flat.schedules.first().viewingSlots.first()
+        BookingService.reserveSlot(tenantId = tenant.id, flatId = flat.id, slotId = slot.id)
+        BookingService.changeSlotStatus(state = REJECTED, flatId = flat.id, slotId = slot.id)
+
+        assertThrows<IllegalArgumentException> {
+            BookingService.changeSlotStatus(state = APPROVED, flatId = flat.id, slotId = slot.id)
+        }
+    }
+
+    @Test
     fun `reject busy slot -- success`() {
         val tenant = TenantsRepository.findAll().first()
         val flat = FlatsRepository.findAll().values.first()

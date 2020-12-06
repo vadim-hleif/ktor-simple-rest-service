@@ -44,6 +44,8 @@ object BookingService {
         if (viewingSlot.bookedBy.get() == null) throw IllegalArgumentException("slot $viewingSlot isn't booked by someone")
         // skip the same actions (for avoiding extra notifications)
         if (viewingSlot.state == state) return viewingSlot
+        // for case when we try to approve rejected slot
+        if (viewingSlot.state == REJECTED) throw IllegalArgumentException("it was rejected and won't be used anymore")
 
         viewingSlot.state = state
         NotificationService.notifyTenantAboutStatusChanging(viewingSlot, flat, day)
