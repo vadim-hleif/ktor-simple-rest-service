@@ -5,7 +5,9 @@ import ktor.simple.rest.service.flat.dtos.Flat
 import ktor.simple.rest.service.flat.dtos.ViewingSlot
 import ktor.simple.rest.service.landlord.dao.LandlordsRepository
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.math.ceil
 
 /**
  * [upcomingDaysCount] is used in [generateFlat] method. It affects count of days for each [Flat.schedules].
@@ -25,22 +27,66 @@ class FlatsGenerator(
     private val endDayTime: LocalTime = LocalTime.of(20, 0),
 ) {
 
-    fun generateFlat(): Flat {
-        val currentDay = LocalDate.now()
+    /**
+     * [startTime] default: current time + 24h. The first slot should be available in at least 24 hours.
+     * Daily schedule is also limited between [startDayTime] and [endDayTime]
+     * e.g:
+     * [startTime] is 2020-01-01T10:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T10:00
+     * [startTime] is 2020-01-01T15:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T15:00
+     * [startTime] is 2020-01-01T21:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-02T10:00
+     * [startTime] is 2020-01-01T10:07, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T10:20
+     * [startTime] is 2020-01-01T10:30, [startDayTime] is 12:00, [endDayTime] is 20:00 - first slot at 2020-01-01T12:00
+     * [startTime] is 2020-01-01T10:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T19:59
+     */
+    fun generateFlat(startTime: LocalDateTime = LocalDateTime.now().plusHours(24)): Flat {
+        val currentDayDate = startTime.toLocalDate()
 
-        return (0L until upcomingDaysCount)
-            .map { dayNum ->
-                DailySchedule(
-                    dateOfTheDay = currentDay.plusDays(dayNum),
-                    viewingSlots = generateSequence(startDayTime) { it.plusMinutes(viewingSlotTimeWindow) }
-                        .takeWhile { it.isBefore(endDayTime) }
-                        .map { ViewingSlot(it, it.plusMinutes(viewingSlotTimeWindow)) }
-                        .toList()
-                )
+        val firstDayStartPoint = when {
+            startTime.toLocalTime() < startDayTime -> currentDayDate.atTime(startDayTime)
+            else -> {
+                val adjustedTime = adjustTime(startTime.toLocalTime())
+
+                if (adjustedTime < endDayTime)
+                    startTime.toLocalDate().atTime(adjustedTime)
+                else
+                    currentDayDate.plusDays(1).atTime(startDayTime)
             }
+        }
+
+        val firstDaySchedule = generateScheduleForDay(firstDayStartPoint.toLocalDate(), firstDayStartPoint.toLocalTime())
+        val nextDays = (1L until upcomingDaysCount)
+            .map { dayNum -> generateScheduleForDay(currentDayDate.plusDays(dayNum), startDayTime) }
+
+        return (sequenceOf(firstDaySchedule) + nextDays)
+            .toList()
             .let { Flat(schedules = it, landlord = LandlordsRepository.findAll().random()) }
     }
 
-    fun generateFlats(flatCount: Int): List<Flat> = (1..flatCount).map { generateFlat() }
+    private fun generateScheduleForDay(dateOfTheDay: LocalDate, startDayTime: LocalTime) = DailySchedule(
+        dateOfTheDay = dateOfTheDay,
+        viewingSlots = generateSequence(startDayTime) { it.plusMinutes(viewingSlotTimeWindow) }
+            .takeWhile { it.isBefore(endDayTime) }
+            .map { ViewingSlot(it, it.plusMinutes(viewingSlotTimeWindow)) }
+            .toList()
+    )
+
+    /**
+     * Adjust start point to the first available slot, uses [viewingSlotTimeWindow] as step.
+     * 10:03 -> 10:20
+     * 10:19 -> 10:20
+     * 19:50 -> 20:00
+     * 19:59 -> 20:00
+     * @see [generateFlat]
+     */
+    private fun adjustTime(startPoint: LocalTime): LocalTime {
+        var startTimeMinutes = ceil(startPoint.minute / viewingSlotTimeWindow.toDouble()) * viewingSlotTimeWindow
+        var startHour = startPoint.hour
+        if (startTimeMinutes > 59) {
+            startTimeMinutes = 0.0
+            startHour += 1
+        }
+
+        return LocalTime.of(startHour, startTimeMinutes.toInt())
+    }
 
 }

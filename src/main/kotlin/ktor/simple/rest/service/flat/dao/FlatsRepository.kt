@@ -7,8 +7,8 @@ object FlatsRepository {
 
     private val generator = FlatsGenerator()
     private val data by lazy {
-        generator.generateFlats(3)
-            .map { it.id to it }
+        (1..3).map { generator.generateFlat() }
+            .map { flat -> flat.id to flat }
             .toMap()
     }
 
