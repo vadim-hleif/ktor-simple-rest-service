@@ -32,12 +32,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     /**
-     * Utils
-     */
-    // In-memory cache
-    implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
-
-    /**
      * Testing
      */
     testImplementation("org.junit.jupiter:junit-jupiter")

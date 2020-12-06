@@ -4,8 +4,8 @@ import io.kotest.matchers.shouldBe
 import io.mockk.mockkObject
 import io.mockk.verify
 import ktor.simple.rest.service.flat.dao.FlatsRepository
-import ktor.simple.rest.service.flat.dtos.SlotState.APPROVED
-import ktor.simple.rest.service.flat.dtos.SlotState.REJECTED
+import ktor.simple.rest.service.flat.dtos.ViewingSlotState.APPROVED
+import ktor.simple.rest.service.flat.dtos.ViewingSlotState.REJECTED
 import ktor.simple.rest.service.notifications.NotificationService
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
 import org.junit.jupiter.api.BeforeEach

@@ -11,13 +11,13 @@ import kotlin.math.ceil
 
 /**
  * [upcomingDaysCount] is used in [generateFlat] method. It affects count of days for each [Flat.schedules].
- * e.g. if it's 7(default value) - schedules will be generated for current day + 6 next days
+ * e.g. if it's 7(default value) - schedules will be generated for tomorrow day(if it's possible due to time windows) + 6 next days
  *
- * [viewingSlotTimeWindow] affects difference between [ViewingSlot.startTime] and [ViewingSlot.endTime] for each slot in [Flat.schedules]
+ * [viewingSlotTimeWindow] affects each slot in [Flat.schedules]
  * Should be provided in minutes
  *
  * "Working" day window can be customised via [startDayTime] and [endDayTime]
- * slot can't be in time outside this window
+ * Viewing slot can't be in time outside this window
  */
 class FlatsGenerator(
     private val upcomingDaysCount: Long = 7,
@@ -30,7 +30,8 @@ class FlatsGenerator(
     /**
      * [startTime] default: current time + 24h. The first slot should be available in at least 24 hours.
      * Daily schedule is also limited between [startDayTime] and [endDayTime]
-     * e.g:
+     *
+     * examples:
      * [startTime] is 2020-01-01T10:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T10:00
      * [startTime] is 2020-01-01T15:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-01T15:00
      * [startTime] is 2020-01-01T21:00, [startDayTime] is 10:00, [endDayTime] is 20:00 - first slot at 2020-01-02T10:00
@@ -41,7 +42,7 @@ class FlatsGenerator(
     fun generateFlat(startTime: LocalDateTime = LocalDateTime.now().plusHours(24)): Flat {
         val currentDayDate = startTime.toLocalDate()
 
-        val firstDayStartPoint = when {
+        val firstDayDateTime = when {
             startTime.toLocalTime() < startDayTime -> currentDayDate.atTime(startDayTime)
             else -> {
                 val adjustedTime = adjustTime(startTime.toLocalTime())
@@ -53,7 +54,7 @@ class FlatsGenerator(
             }
         }
 
-        val firstDaySchedule = generateScheduleForDay(firstDayStartPoint.toLocalDate(), firstDayStartPoint.toLocalTime())
+        val firstDaySchedule = generateScheduleForDay(firstDayDateTime.toLocalDate(), firstDayDateTime.toLocalTime())
         val nextDays = (1L until upcomingDaysCount)
             .map { dayNum -> generateScheduleForDay(currentDayDate.plusDays(dayNum), startDayTime) }
 

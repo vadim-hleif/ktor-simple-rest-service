@@ -10,7 +10,7 @@ class FlatsGeneratorTimeBordersTest {
     private val generator = FlatsGenerator()
 
     /**
-     * [FlatsGenerator.startDayTime] is 10:00, [FlatsGenerator. endDayTime] is 20:00.
+     * [FlatsGenerator.startDayTime] is 10:00, [FlatsGenerator.endDayTime] is 20:00.
      * It is default.
      */
     @TestFactory

@@ -2,8 +2,8 @@ package ktor.simple.rest.service.flat.services
 
 import ktor.simple.rest.service.flat.dao.FlatsRepository
 import ktor.simple.rest.service.flat.dtos.Flat
-import ktor.simple.rest.service.flat.dtos.SlotState
-import ktor.simple.rest.service.flat.dtos.SlotState.REJECTED
+import ktor.simple.rest.service.flat.dtos.ViewingSlotState
+import ktor.simple.rest.service.flat.dtos.ViewingSlotState.REJECTED
 import ktor.simple.rest.service.flat.dtos.ViewingSlot
 import ktor.simple.rest.service.notifications.NotificationService
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
@@ -35,7 +35,7 @@ object BookingService {
         NotificationService.notifyLandlordAboutReservation(flat, day, viewingSlot, tenant)
     }
 
-    fun changeSlotStatus(state: SlotState, flatId: Int, slotId: Int): ViewingSlot {
+    fun changeSlotStatus(state: ViewingSlotState, flatId: Int, slotId: Int): ViewingSlot {
         val flat = FlatsRepository.findOne(flatId) ?: throw EntityNotFoundException("flat with id: $flatId not found")
 
         val (day, viewingSlot) = findSlot(flat, slotId)

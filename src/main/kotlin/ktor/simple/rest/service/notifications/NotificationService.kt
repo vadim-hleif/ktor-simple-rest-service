@@ -9,6 +9,7 @@ import java.time.LocalDate
 
 /**
  * Notifications stub
+ * Just prints it to console via logging
  */
 object NotificationService {
 
