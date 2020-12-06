@@ -7,10 +7,9 @@ import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import ktor.simple.rest.service.flat.utils.FlatsGenerator
+import ktor.simple.rest.service.flat.dao.FlatsRepository
 import java.text.DateFormat
 
-val flat = FlatsGenerator().generateFlat()
 
 fun Application.module() {
     install(ContentNegotiation) {
@@ -21,9 +20,8 @@ fun Application.module() {
         }
     }
     routing {
-        get("/test") { call.respond(flat) }
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
+        get("/flats") {
+            call.respond(FlatsRepository.findAll())
         }
     }
 }

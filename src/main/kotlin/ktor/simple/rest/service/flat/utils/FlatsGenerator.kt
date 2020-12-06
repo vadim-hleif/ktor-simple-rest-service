@@ -40,4 +40,6 @@ class FlatsGenerator(
             .let(::Flat)
     }
 
+    fun generateFlats(flatCount: Int): List<Flat> = (1..flatCount).map { generateFlat() }
+
 }
