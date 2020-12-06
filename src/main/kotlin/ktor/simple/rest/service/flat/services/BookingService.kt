@@ -20,7 +20,7 @@ object BookingService {
         val bookedBy = viewingSlot.bookedBy.get()
         if (bookedBy != null) {
             // can't be reserved after rejection
-            if (viewingSlot.state == REJECTED) throw IllegalArgumentException("it was rejected and won't be reserved anymore")
+            if (viewingSlot.state == REJECTED) throw IllegalArgumentException("it was rejected and won't be used anymore")
             // skip the same actions (for avoiding extra notifications)
             if (bookedBy.id == tenantId) return
 
@@ -49,6 +49,21 @@ object BookingService {
         NotificationService.notifyTenantAboutStatusChanging(viewingSlot, flat, day)
 
         return viewingSlot
+    }
+
+    fun releaseSlot(flatId: Int, slotId: Int) {
+        val flat = FlatsRepository.findOne(flatId) ?: throw EntityNotFoundException("flat with id: $flatId not found")
+        val (day, viewingSlot) = findSlot(flat, slotId)
+
+        // is case when we try to release status a free slot
+        val prevTenant = viewingSlot.bookedBy.get() ?: throw IllegalArgumentException("slot is free")
+        // for case when we try to release rejected slot
+        if (viewingSlot.state == REJECTED) throw IllegalArgumentException("it was rejected and won't be used anymore")
+
+        viewingSlot.bookedBy.set(null)
+        viewingSlot.state = null
+
+        NotificationService.notifyLandlordAboutReleasing(viewingSlot, flat, day, prevTenant)
     }
 
     private fun findSlot(flat: Flat, slotId: Int) = flat.schedules

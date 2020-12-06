@@ -8,13 +8,13 @@ import ktor.simple.rest.service.flat.dtos.SlotState.APPROVED
 import ktor.simple.rest.service.flat.dtos.SlotState.REJECTED
 import ktor.simple.rest.service.notifications.NotificationService
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class BookingServiceTest {
 
-    @AfterEach
+    @BeforeEach
     internal fun tearDown() = FlatsRepository.findAll().values
         .flatMap { it.schedules }
         .flatMap { it.viewingSlots }
@@ -137,5 +137,39 @@ class BookingServiceTest {
         }
     }
 
+    @Test
+    fun `release free slot -- error`() {
+        val flat = FlatsRepository.findAll().values.last()
+        val slot = flat.schedules.first().viewingSlots.last()
+
+        assertThrows<IllegalArgumentException> {
+            BookingService.releaseSlot(flatId = flat.id, slotId = slot.id)
+        }
+    }
+
+    @Test
+    fun `release busy slot -- success, state and tenant are empty`() {
+        val tenant = TenantsRepository.findAll().first()
+        val flat = FlatsRepository.findAll().values.first()
+        val slot = flat.schedules.first().viewingSlots.first()
+        BookingService.reserveSlot(tenantId = tenant.id, flatId = flat.id, slotId = slot.id)
+
+        BookingService.releaseSlot(flatId = flat.id, slotId = slot.id)
+        slot.state shouldBe null
+        slot.bookedBy.get() shouldBe null
+    }
+
+    @Test
+    fun `release rejected slot -- error`() {
+        val tenant = TenantsRepository.findAll().first()
+        val flat = FlatsRepository.findAll().values.first()
+        val slot = flat.schedules.first().viewingSlots.first()
+        BookingService.reserveSlot(tenantId = tenant.id, flatId = flat.id, slotId = slot.id)
+        BookingService.changeSlotStatus(state = REJECTED, flatId = flat.id, slotId = slot.id)
+
+        assertThrows<IllegalArgumentException> {
+            BookingService.releaseSlot(flatId = flat.id, slotId = slot.id)
+        }
+    }
 
 }

@@ -17,18 +17,37 @@ object NotificationService {
     fun notifyTenantAboutStatusChanging(viewingSlot: ViewingSlot, flat: Flat, day: LocalDate) = sendNotification(
         "${viewingSlot.bookedBy.get()!!.id}",
         """
-                Status of your reservation of flat: ${flat.id} is ${viewingSlot.state}.
-                Reminders:
-                Landlord is ${flat.landlord.id}. Time in $day at ${viewingSlot.startTime} - ${viewingSlot.endTime}
+                New status of reservation ${viewingSlot.id} is ${viewingSlot.state}.
+                
+                Details:
+                Flat: ${flat.id}
+                Time: $day at ${viewingSlot.startTime} - ${viewingSlot.endTime}
             """
     )
 
     fun notifyLandlordAboutReservation(flat: Flat, day: LocalDate, viewingSlot: ViewingSlot, tenant: Tenant) = sendNotification(
         "${flat.landlord.id}",
         """
-                New slot reservation on $day at ${viewingSlot.startTime} - ${viewingSlot.endTime} by ${tenant.id}.
-                Flat is ${flat.id}
+                New reservation.
                 Please approve or reject it.
+                
+                Details:
+                Flat: ${flat.id}
+                Time: $day at ${viewingSlot.startTime} - ${viewingSlot.endTime}
+                Tenant: ${tenant.id}
+            """
+    )
+
+    fun notifyLandlordAboutReleasing(viewingSlot: ViewingSlot, flat: Flat, day: LocalDate, tenant: Tenant) = sendNotification(
+        "${flat.landlord.id}",
+        """
+                Slot reservation was released.
+                Time slot is available for future reservations.
+                
+                Details:
+                Flat: ${flat.id}
+                Time: $day at ${viewingSlot.startTime} - ${viewingSlot.endTime}
+                Previous tenant: ${tenant.id}
             """
     )
 

@@ -11,6 +11,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import ktor.simple.rest.service.flat.dao.FlatsRepository
 import ktor.simple.rest.service.flat.services.BookingService.changeSlotStatus
+import ktor.simple.rest.service.flat.services.BookingService.releaseSlot
 import ktor.simple.rest.service.flat.services.BookingService.reserveSlot
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
 import ktor.simple.rest.service.utils.exceptions.EntityNotFoundException
@@ -55,6 +56,14 @@ fun Application.module() {
                 patchRequest.tenantId != null -> reserveSlot(tenantId = patchRequest.tenantId, flatId = flatId, slotId = slotId)
                 patchRequest.state != null -> changeSlotStatus(state = patchRequest.state, flatId = flatId, slotId = slotId)
             }
+
+            call.respond(status = HttpStatusCode.NoContent, "")
+        }
+        delete("/flats/{flat_id}/slots/{slot_id}") {
+            val flatId = call.parameters["flat_id"]!!.toInt()
+            val slotId = call.parameters["slot_id"]!!.toInt()
+
+            releaseSlot(flatId, slotId)
 
             call.respond(status = HttpStatusCode.NoContent, "")
         }
