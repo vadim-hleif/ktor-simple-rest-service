@@ -1,3 +1,3 @@
-package ktor.simple.rest.service.exceptions
+package ktor.simple.rest.service.utils.exceptions
 
 class EntityNotFoundException(message: String) : RuntimeException(message)

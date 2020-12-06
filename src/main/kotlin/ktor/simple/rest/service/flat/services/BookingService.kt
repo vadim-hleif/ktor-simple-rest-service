@@ -1,6 +1,6 @@
 package ktor.simple.rest.service.flat.services
 
-import ktor.simple.rest.service.exceptions.EntityNotFoundException
+import ktor.simple.rest.service.utils.exceptions.EntityNotFoundException
 import ktor.simple.rest.service.flat.dao.FlatsRepository
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
 

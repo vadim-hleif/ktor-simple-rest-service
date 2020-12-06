@@ -9,10 +9,10 @@ import io.ktor.jackson.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import ktor.simple.rest.service.exceptions.EntityNotFoundException
+import ktor.simple.rest.service.utils.exceptions.EntityNotFoundException
 import ktor.simple.rest.service.flat.dao.FlatsRepository
 import ktor.simple.rest.service.flat.services.BookingService
-import ktor.simple.rest.service.requests.BookSlotRequest
+import ktor.simple.rest.service.utils.requests.BookSlotRequest
 import ktor.simple.rest.service.tenant.dao.TenantsRepository
 import java.text.DateFormat
 
