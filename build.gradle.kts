@@ -6,28 +6,40 @@ plugins {
 }
 
 dependencies {
-    // BOMs
+    /**
+     * BOMs
+     */
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.4.0"))
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
 
-    // kotlin
+    /**
+     * Kotlin
+     */
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 
-    // ktor
-    val ktorVersion = "1.4.3"
+    /**
+     * Ktor
+     */
+    val ktorVersion = "1.4.0"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    // json
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0")
+    // logging
+    val logbackVersion = "1.2.1"
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    // Tests tools
+    /**
+     * Testing
+     */
     testImplementation("org.junit.jupiter:junit-jupiter")
-
+    // nice asserts
     val kotestVersion = "4.3.1"
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
-
+    // mocking
     testImplementation("io.mockk:mockk:1.10.3")
 }
 
