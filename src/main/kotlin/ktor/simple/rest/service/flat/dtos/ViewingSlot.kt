@@ -11,4 +11,5 @@ data class ViewingSlot(
     @JsonFormat(pattern = "HH:mm") val endTime: LocalTime,
     val id: Int = IdGenerator.genNextId(),
     var bookedBy: AtomicReference<Tenant?> = AtomicReference(null),
+    var state: SlotState? = null,
 )
