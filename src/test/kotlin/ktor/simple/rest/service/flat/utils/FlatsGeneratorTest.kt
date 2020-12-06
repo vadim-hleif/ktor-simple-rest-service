@@ -1,6 +1,7 @@
 package ktor.simple.rest.service.flat.utils
 
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.Duration
@@ -34,6 +35,11 @@ class FlatsGeneratorTest {
                 Duration.between(startTime, endTime) shouldBe Duration.ofMinutes(20)
             }
         }
+    }
+
+    @Test
+    fun `produced flat -- landlord must be provided`() {
+        generator.generateFlat().landlord.shouldNotBeNull()
     }
 
     @Test

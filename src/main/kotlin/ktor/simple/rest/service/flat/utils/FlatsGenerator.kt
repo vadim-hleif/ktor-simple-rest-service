@@ -3,6 +3,7 @@ package ktor.simple.rest.service.flat.utils
 import ktor.simple.rest.service.flat.dtos.DailySchedule
 import ktor.simple.rest.service.flat.dtos.Flat
 import ktor.simple.rest.service.flat.dtos.ViewingSlot
+import ktor.simple.rest.service.landlord.dao.LandlordsRepository
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -37,7 +38,7 @@ class FlatsGenerator(
                         .toList()
                 )
             }
-            .let(::Flat)
+            .let { Flat(schedules = it, landlord = LandlordsRepository.findAll().random()) }
     }
 
     fun generateFlats(flatCount: Int): List<Flat> = (1..flatCount).map { generateFlat() }

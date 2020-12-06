@@ -15,11 +15,14 @@ object BookingService {
             .find { it.id == slotId } ?: throw EntityNotFoundException("slot ith id: $slotId not found")
 
         val bookedBy = viewingSlot.bookedBy.get()
-        if (bookedBy != null && bookedBy.id != tenantId) {
+        if (bookedBy != null) {
+            if (bookedBy.id == tenantId) return
             throw IllegalStateException("it is booked already by someone else")
         }
 
-        viewingSlot.bookedBy.compareAndSet(null, tenant)
+        if (!viewingSlot.bookedBy.compareAndSet(null, tenant)) {
+            throw IllegalStateException("it is booked already by someone else")
+        }
     }
 
 }
