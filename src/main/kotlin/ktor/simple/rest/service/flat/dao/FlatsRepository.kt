@@ -6,9 +6,11 @@ import ktor.simple.rest.service.flat.utils.FlatsGenerator
 object FlatsRepository {
 
     private val generator = FlatsGenerator()
-    private val data = generator.generateFlats(3)
-        .map { it.id to it }
-        .toMap()
+    private val data by lazy {
+        generator.generateFlats(3)
+            .map { it.id to it }
+            .toMap()
+    }
 
     fun findAll(): Map<Int, Flat> = data
 
