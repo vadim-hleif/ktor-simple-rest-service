@@ -8,6 +8,4 @@ object LandlordsRepository {
 
     fun findAll(): List<Landlord> = data
 
-    fun findOne(id: Int): Landlord? = data.find { it.id == id }
-
 }
